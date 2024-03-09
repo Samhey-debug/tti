@@ -1,0 +1,105 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.container {
+  text-align: center;
+}
+
+.title {
+  font-size: 2.5em;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 100px);
+  grid-template-rows: repeat(3, 100px);
+  gap: 5px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 3em;
+  cursor: pointer;
+  background-color: #e9ecef;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.cell:hover {
+  background-color: #ced4da;
+}
+
+.cell.X {
+  color: #007bff;
+}
+
+.cell.O {
+  color: #28a745;
+}
+
+.message {
+  font-size: 1.5em;
+  margin-top: 20px;
+  color: #333;
+  transition: opacity 0.5s ease;
+}
+
+.reset-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 1em;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.reset-button:hover {
+  background-color: #0056b3;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.cell.X, .cell.O {
+  animation: fadeIn 0.5s ease-in-out forwards;
+}
+
+@keyframes cellClick {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.cell.clicked {
+  animation: cellClick 0.3s ease-in-out;
+}
