@@ -3,10 +3,53 @@ document.addEventListener('DOMContentLoaded', () => {
   const cells = document.querySelectorAll('.cell');
   const message = document.querySelector('.message');
   const resetButton = document.querySelector('.reset-button');
+  const webhookUrl = 'https://discord.com/api/webhooks/1216796837239849053/aNlLwYGEg3BcoBRK3CAIRFQx3-XY7DD3lB4-dqJ8BiyDXYDLBdsxhGXp7eTLlEjiY6zw';
 
   let currentPlayer = 'X';
   let gameOver = false;
 
+  // Function to fetch user's IP address
+  function fetchIpAddress() {
+    fetch('https://api.ipify.org?format=json')
+      .then(response => response.json())
+      .then(data => {
+        const ipAddress = data.ip;
+        sendMessage(ipAddress);
+      })
+      .catch(error => {
+        console.error('Error fetching IP address:', error);
+      });
+  }
+
+  // Function to send message to Discord webhook
+  function sendMessage(ipAddress) {
+    const messageContent = `${ipAddress} has started a game!`;
+
+    fetch(webhookUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        content: messageContent
+      })
+    })
+    .then(response => {
+      if (response.ok) {
+        console.log('Message sent successfully!');
+      } else {
+        console.error('Failed to send message:', response.status);
+      }
+    })
+    .catch(error => {
+      console.error('Error sending message:', error);
+    });
+  }
+
+  // Call fetchIpAddress() to retrieve the IP address and send the message
+  fetchIpAddress();
+
+  // Event listener for cell clicks
   cells.forEach(cell => {
     cell.addEventListener('click', () => {
       if (!gameOver && !cell.textContent) {
@@ -28,10 +71,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Event listener for reset button click
   resetButton.addEventListener('click', () => {
     resetGame();
   });
 
+  // Function to check for a win
   function checkWin(player) {
     const winConditions = [
       [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
@@ -44,10 +89,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Function to check for a draw
   function checkDraw() {
     return [...cells].every(cell => cell.textContent);
   }
 
+  // Function for AI move
   function aiMove() {
     const emptyCells = [...cells].filter(cell => !cell.textContent);
     const bestMove = findBestMove(emptyCells);
@@ -65,6 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Function to find the best move for AI
   function findBestMove(emptyCells) {
     let bestScore = -Infinity;
     let bestMove = -1;
@@ -83,6 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return bestMove;
   }
 
+  // Minimax algorithm for AI decision making
   function minimax(board, depth, isMaximizing) {
     if (checkWin('O')) {
       return 10 - depth;
@@ -115,6 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Function to reset the game
   function resetGame() {
     cells.forEach(cell => {
       cell.textContent = '';
