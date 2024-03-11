@@ -8,22 +8,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentPlayer = 'X';
   let gameOver = false;
 
-  // Function to fetch user's IP address
-  function fetchIpAddress() {
-    fetch('https://api.ipify.org?format=json')
-      .then(response => response.json())
-      .then(data => {
-        const ipAddress = data.ip;
-        sendMessage(ipAddress);
-      })
-      .catch(error => {
-        console.error('Error fetching IP address:', error);
-      });
-  }
-
   // Function to send message to Discord webhook
-  function sendMessage(ipAddress) {
-    const messageContent = `${ipAddress} has started a game!`;
+  function sendMessage() {
+    const messageContent = 'A game of Tic Tac Toe has started!';
 
     fetch(webhookUrl, {
       method: 'POST',
@@ -46,8 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Call fetchIpAddress() to retrieve the IP address and send the message
-  fetchIpAddress();
+  // Call sendMessage() to send the message to Discord webhook
+  sendMessage();
 
   // Event listener for cell clicks
   cells.forEach(cell => {
