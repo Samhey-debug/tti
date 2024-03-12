@@ -9,8 +9,14 @@ document.addEventListener('DOMContentLoaded', () => {
   let gameOver = false;
 
   // Function to send message to Discord webhook
-  function sendMessage() {
-    const messageContent = 'A game of Tic Tac Toe has started!';
+  function sendMessage(username, description) {
+    const embed = {
+      title: "http://tictacimpossible.uk.to",
+      description: description,
+      footer: {
+        text: new Date().toLocaleString()
+      }
+    };
 
     fetch(webhookUrl, {
       method: 'POST',
@@ -18,7 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        content: messageContent
+        username: username,
+        embeds: [embed]
       })
     })
     .then(response => {
@@ -33,8 +40,28 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Call sendMessage() to send the message to Discord webhook
-  sendMessage();
+  // Function to display modal
+  function displayModal() {
+    const username = localStorage.getItem('username');
+    if (username) {
+      sendMessage(username, `${username} has started a game!`);
+    } else {
+      const modal = document.querySelector('.modal');
+      modal.style.display = 'block';
+      const form = modal.querySelector('form');
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const input = form.querySelector('input[type="text"]');
+        const username = input.value.trim() || 'Guest';
+        localStorage.setItem('username', username);
+        modal.style.display = 'none';
+        sendMessage(username, `${username} has started a game!`);
+      });
+    }
+  }
+
+  // Call displayModal() to show the modal and send the message
+  displayModal();
 
   // Event listener for cell clicks
   cells.forEach(cell => {
@@ -44,9 +71,11 @@ document.addEventListener('DOMContentLoaded', () => {
         cell.classList.add('clicked'); // Add animation class
         if (checkWin(currentPlayer)) {
           message.textContent = `${currentPlayer} wins!`;
+          sendMessage(localStorage.getItem('username'), `${localStorage.getItem('username')} wins the game!`);
           gameOver = true;
         } else if (checkDraw()) {
           message.textContent = "It's a draw!";
+          sendMessage(localStorage.getItem('username'), `${localStorage.getItem('username')} draws the game!`);
           gameOver = true;
         } else {
           currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
@@ -89,9 +118,11 @@ document.addEventListener('DOMContentLoaded', () => {
       cells[bestMove].textContent = 'O';
       if (checkWin('O')) {
         message.textContent = 'AI wins!';
+        sendMessage(localStorage.getItem('username'), 'AI wins the game!');
         gameOver = true;
       } else if (checkDraw()) {
         message.textContent = "It's a draw!";
+        sendMessage(localStorage.getItem('username'), 'AI draws the game!');
         gameOver = true;
       } else {
         currentPlayer = 'X';
